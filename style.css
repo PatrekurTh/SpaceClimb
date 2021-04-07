@@ -1,0 +1,77 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(6,8,22);
+}
+#menu, #highscore {
+    background-color: rgba(24, 141, 92, 0.3);
+    color: white;
+    /* z-index: 100; */
+    position: absolute;
+    width: 300px;
+    /* margin: auto; */
+    padding: 50px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    border-radius: 20px;
+}
+
+#highscore {
+    width: 500px;
+    display: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
+
+canvas {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    background-image: url(img/background.png);
+}
+
+h2{
+    position: absolute;
+    display: inline;
+    transform: translate(-50%);
+    top: 400px;
+    left: -100px;
+    transform: rotate(-70deg);
+    font-size: 80px;
+    text-shadow: 3px 3px 20px black;
+    color: wheat;
+}
+
+#highscore h3 {
+    text-align: center;
+    font-size: 50px;
+    margin-bottom: 0;
+}
+
+#highscore ol {
+    position: relative;
+    margin: 40px;
+}
+
+ol li {
+    padding: 40px;
+    font-size: 40px;
+}
+
+span {
+    width: fit-content;
+    display: inline;
+    font-size: 40px;
+    position: absolute;
+    transform: translate(150px, 35px);
+}
+
+button {
+    font-size: 40px;
+    border-radius: 10px;
+    margin: 20px;
+}
