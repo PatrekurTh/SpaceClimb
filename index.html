@@ -7,29 +7,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <h2>RIP FLASH PLAYER</h2>
     <canvas id="canvas"></canvas>
     <!-- <button type="button" onclick="menuToggle()">menu</button> -->
+    <div id="welcome">
+        <span>Velkomin í</span>
+        <img src="/img/roboclimb.png" alt="RoboClimb">
+    </div>
+
     <div id="menu">
-        <ul>
-            <li><button type="button" id="spila" onclick="highscoreToggle()">Hefja Leik</li></button>
-            <li><button type="button" onclick="highscoreToggle()">Highscore</li></button>
-            <div id="highscore">
-                <h3>Highscore</h3>
-                <ol>
-                    <span id="name"></span>
-                    <li id="first">0</li>
-                    <span id="name2"></span>
-                    <li id="second">0</li>
-                    <span id="name3"></span>
-                    <li id="third">0</li>
-                </ol>
-                <input type="button" value="Back" onclick="highscoreToggle()" id="back">
-            </div>
-        </ul>
+
+        <!-- <ul> -->
+        <!-- <li><button type="button" id="spila" onclick="highscoreToggle()">Hefja Leik</li></button> -->
+        <a href="#" onclick="highscoreToggle()" id="spila">Spila</a>
+        <a href="#" onclick="highscoreToggle()">HighScore</a>
+        <a href="#">Leiðbeiningar</a>
+    </div>
+    <!-- <li><a type="button" onclick="highscoreToggle()" value="HighScore"></li> -->
+    <!-- <li><button type="button" onclick="highscoreToggle()">Highscore</li></button> -->
+    <div id="highscore">
+        <h3>Highscore</h3>
+        <ol>
+            <span id="name"></span>
+            <li id="first">0</li>
+            <span id="name2"></span>
+            <li id="second">0</li>
+            <span id="name3"></span>
+            <li id="third">0</li>
+        </ol>
+        <a href="#" onclick="highscoreToggle()" id="back">Back</a>
+        <!-- <input type="button" value="Back" onclick="highscoreToggle()" id="back"> -->
+    </div>
+    <!-- </ul> -->
     </div>
     <script src="mixup.js"></script>
 

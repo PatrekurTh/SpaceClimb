@@ -229,7 +229,7 @@ function update() {
     // ================ TEIKNA SCORE ======================
 
     ctx.fillStyle = "white";
-    ctx.font = "40px Arial";
+    ctx.font = "40px 'Architects Daughter', cursive";
     ctx.fillText("Score: " + score, 30, 50);
 
 
@@ -245,6 +245,7 @@ function update() {
         clearTimeout(loopPlatforms);
         scoreBoard();
         document.querySelector('#menu').style.display = '';
+        document.querySelector('#welcome').style.display = '';
     }
 }
 
@@ -343,17 +344,17 @@ function scoreBoard() {
         tName.innerText = sName.innerText;
         second.innerText = first.innerText;
         fName.innerText = sName.innerText;
-        fName.innerText = '-' + pName;
+        fName.innerText = '=> ' + pName;
         first.innerText = score;
     } else if (score > second.innerText) {
         pName = prompt(`Game Over \n Score: ${score} \n Enter Name: `);
         third.innerText = second.innerText;
         tName.innerText = sName.innerText;
-        sName.innerText = '-' + pName;
+        sName.innerText = '=> ' + pName;
         second.innerText = score;
     } else if (score > third.innerText) {
         pName = prompt(`Game Over \n Score: ${score} \n Enter Name: `);
-        tName.innerText = '-' + pName;
+        tName.innerText = '=> ' + pName;
         third.innerText = score;
     } else {
         alert(`Game Over \n Score: ${score}`);
@@ -362,6 +363,7 @@ function scoreBoard() {
 
 function startGame() {
     document.querySelector('#menu').style.display = 'none';
+    document.querySelector('#welcome').style.display = 'none';
     numberOfPlatforms = 0;
     score = 0;
     player.x = width / 2;
