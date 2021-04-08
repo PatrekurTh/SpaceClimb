@@ -40,6 +40,8 @@ var canvas = document.getElementById("canvas"),
     loop,
     numberOfPlatforms = 0;
 
+canvas.width = width;
+canvas.height = height;
 
 
 // ======== STATIC PLATFORMS OG VEGGIR ===================
@@ -89,15 +91,39 @@ boxes.push({
     height: height + 200
 });
 
-canvas.width = width;
-canvas.height = height;
 
-song.src = "sound/ITTheme.mp3";
-song.volume = .05
+
+
 jump.src = '/sound/Jump2.wav';
-jump.volume = .2
 death.src = '/sound/death_7_ian.wav'
-death.volume = .1
+song.src = "sound/song.mp3";
+
+// music.addEventListener('click', musicCheck);
+// sound.addEventListener('click', soundCheck);
+
+function soundCheck() {
+    let sound = document.getElementById('sound');
+    if (sound.checked) {
+        jump.volume = 0.3;
+        death.volume = 0.3;
+    } else {
+        death.volume = 0;
+        jump.volume = 0;
+    }
+}
+
+function musicCheck() {
+    let music = document.getElementById('music');
+    if (music.checked) {
+        song.volume = 0.1
+    } else {
+        song.volume = 0;
+    }
+}
+
+
+
+
 
 
 function update() {
@@ -134,7 +160,7 @@ function update() {
             player.jumping = true;
             player.grounded = false;
             player.velY = -player.speed * 4;// breyta constant hérna til að setja jump hæð
-            // jump.play();
+            jump.play();
         }
     }
     if (keys['ArrowRight']) {
@@ -150,23 +176,26 @@ function update() {
         }
     }
 
-    // friction sér um smooth stop í staðinn fyrir full stop, x er alltaf að breytast eftir fyrstu hreyfingu
+    // friction sér um smooth stop í staðinn fyrir full stop og gravity að toga
     player.velX *= friction;
     player.velY += gravity;
 
     // ============= ALLAR HREYFINGAR GERAST SVO HÉR ==================
     player.x += player.velX * 5; // constant til að hlaupa hraðar
-    player.y += player.velY * 2;
+    player.y += player.velY * 2; // constant til að falla hraðar
 
+    // hreinsar fyrir updates
     ctx.clearRect(0, 0, width, height);
     player.grounded = false;
 
-    // ================ TEIKNA VEGGI OG TJÉKKA COLLISION VIÐ PLAYER ===============================
+    // ================ TEIKNA VEGGI OG TJÉKKAR COLLISION VIÐ PLAYER ===============================
 
-    for (let i = 0; i < boxes.length; i++) {//print boxes
+    for (let i = 0; i < boxes.length; i++) {
         ctx.rect(boxes[i].x, boxes[i].y, boxes[i].width, boxes[i].height);
         let dir = colCheck(player, boxes[i]);
 
+        // í stað fyrir að spilari stoppi við a hitta á vegg
+        // bouncear hann aðeins út og upp
         if (dir === "l") {
             player.velX = 9;
             player.velY -= 4;
@@ -181,65 +210,70 @@ function update() {
         }
     }
 
-    // ============= BÚA TIL PLATFORMS OG TJÉKKA COLLISION VIÐ PLAYER =====================
+    // ============= BÚA TIL PLATFORMS OG TJÉKKAR COLLISION VIÐ PLAYER =====================
 
     for (let i = 0; i < platforms.length; i++) {
         platformImg.src = 'img/platform.png'
-
         ctx.drawImage(platformImg, platforms[i].x, platforms[i].y, platforms[i].width, platforms[i].height)
+        // passa að þeir byrji ekki að hreyfast fyrr en leikmaður hefur ákveðið að hoppa
         if (isPlaying) {
             platforms[i].velY = gravity * 5;
             platforms[i].y += platforms[i].velY * 2;
         }
-
         let dir = colCheck(player, platforms[i]);
-
         if (dir === "b") {
             player.grounded = true;
             player.jumping = false;
-            // setur player Y velocity í sama og pallurinn sem hann snertir til að líkja eftir
-            // að hann sé standandi á honum
+            // setur player Y velocity í sama og pallarnir til að líkja eftir
+            // að spilari sé standandi á honum
             player.velY = platforms[i].velY;
         }
     }
 
     // ======================== CAMERA OG GAMESPEED MAGIC ========================
-
+    // engin sérstök ástæða fyrir constants hérna, bara prufað sig áfram
     if (player.y < 0) {
-        gravity = 1 + numberOfPlatforms / 500;
-        player.speed = 3.75 + numberOfPlatforms / 400;
-        time = 400 - numberOfPlatforms;
+        gravity = 1.2 + numberOfPlatforms / 500;
+        player.speed = 4 + numberOfPlatforms / 350;
+        time = 500 - numberOfPlatforms;
     } else if (player.y < height / 4) {
         gravity = 0.85 + numberOfPlatforms / 500;
-        player.speed = 3.5 + numberOfPlatforms / 400;
-        time = 500 - numberOfPlatforms;
+        player.speed = 3.75 + numberOfPlatforms / 350;
+        time = 550 - numberOfPlatforms;
     } else if (player.y < height / 2) {
         gravity = 0.65 + numberOfPlatforms / 500;
-        player.speed = 3.25 + numberOfPlatforms / 400;
+        player.speed = 3.5 + numberOfPlatforms / 350;
         time = 600 - numberOfPlatforms;
+    } else if (player.y < height * 3 / 4) {
+        gravity = 0.5 + numberOfPlatforms / 500;
+        player.speed = 3.25 + numberOfPlatforms / 350;
+        time = 650 - numberOfPlatforms;
     } else {
         gravity = 0.4 + numberOfPlatforms / 500;
+        player.speed += numberOfPlatforms / 350;
         time = 700 - numberOfPlatforms;
     }
 
-    // ================ TEIKNAR PLAYER =====================
+    // ================ TEIKNA PLAYER =====================
 
     ctx.drawImage(robot, player.x, player.y, player.width, player.height);
 
     // ================ TEIKNA SCORE ======================
-
     ctx.fillStyle = "white";
     ctx.font = "40px 'Architects Daughter', cursive";
     ctx.fillText("Score: " + score, 30, 50);
 
 
+    // ============== GANGSETNING OG LEIK LOKIÐ ======================
     if (isPlayingCounter === 1) {
         periodicall();
         platformDeleter;
         isPlayingCounter = 2;
+        song.play();
     }
-
     if (player.y > height) {
+        death.play();
+        song.pause();
         clearInterval(loop);
         clearInterval(platformDeleter);
         clearTimeout(loopPlatforms);
@@ -248,12 +282,10 @@ function update() {
     }
 }
 
-
 // ============ PLATFORM SPAWN OG DELETE ========================
 
-
 // pushar nýjum platform á (time) fresti
-// telur líka hversu margir platforms hafa orðið til, fyrir score
+// telur líka hversu margir platforms hafa orðið til, fyrir score og scaling á tíma
 function periodicall() {
     numberOfPlatforms += 1;
     platforms.push({
@@ -265,7 +297,7 @@ function periodicall() {
     });
     loopPlatforms = setTimeout(periodicall, time);
 }
-// tjékkar hvort ehv platforms séu útaf skjánum á hálfsek. fresti og deletar þeim fyrir performance
+// tjékkar hvort ehv platforms séu útaf skjánum á og deletar þeim fyrir langtíma performance
 let platformDeleter = () => {
     let outOfScreen = 0;
     for (let i = 0; i < platforms.length; i++) {
@@ -281,23 +313,24 @@ let platformDeleter = () => {
 // ===================== COLLISION CHECK ÚTREIKNINGUR =====================
 
 function colCheck(shapeA, shapeB) {
-    // get the vectors to check against
+    // nær í vektora til að bera saman
     var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
         vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
-        // add the half widths and half heights of the objects
+        // bætir við hálfri vídd og breidd hlutsins
         hWidths = (shapeA.width / 2) + (shapeB.width / 2),
         hHeights = (shapeA.height / 2) + (shapeB.height / 2),
         colDir = null;
 
-    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+
+    // ef vektor x og y eru minna en helmingur af vídd eða breidd hljóta þeir að vera inní hlutnum, sem triggerar collision
     if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
         // finnur út hvaða hlið collision á sér stað og skilar
         var oX = hWidths - Math.abs(vX),
             oY = hHeights - Math.abs(vY);
+
         if (oX >= oY) {
             if (vY > 0) {
                 colDir = "t";
-
                 if (boxes.indexOf(shapeB) > 0) {
                     shapeA.y += oY;
                 }
@@ -306,13 +339,12 @@ function colCheck(shapeA, shapeB) {
                     colDir = "b";
                     shapeA.y -= oY;
                 }
-
             }
         } else {
+            // bara athugað collision hægri/vinstri við veggi ekki platforms
             if (vX > 0) {
                 //indexOf skilar -1 ef hlutur finnst ekki í array
-                // þetta tjékkar þá bara veggi ekki platforms
-                // af eitthverjum ástæðum vildi þetta ekki virka fyrir index 0 jafnvel þótt -1 sé minna en fokking 0
+                // af eitthverjum ástæðum vildi þetta ekki virka fyrir index 0
                 if (boxes.indexOf(shapeB) !== -1) {
                     colDir = "l";
                     shapeA.x += oX;
@@ -322,16 +354,42 @@ function colCheck(shapeA, shapeB) {
                     colDir = "r";
                     shapeA.x -= oX;
                 }
-
             }
         }
     }
     return colDir;
 }
 
+// ================= DOM SKIPANIR =======================
+
+const instructionsMenu = document.getElementById('instructionsMenu');
+const instructionButton = document.getElementById('instructionsButton');
+const menu = document.getElementById('menu');
+const highscoreButton = document.getElementById('highscoreButton');
+const highscoreMenu = document.getElementById('highscore');
+const back = document.getElementById('back');
+
+// instructionButton.addEventListener('click', () => {
+//     if (instructionsMenu.style.display === 'none') {
+//         instructionsMenu.style.display = 'flex';
+//     } else {
+//         instructionsMenu.style.display = 'none';
+//     }
+// });
+highscoreButton.addEventListener('click', () => {
+    if (highscoreMenu.style.display === 'none') {
+        highscoreMenu.style.display = 'flex';
+    }
+    else {
+        highscoreMenu.style.display = 'none';
+    }
+});
+back.addEventListener('click', () => {
+    highscoreMenu.style.display = 'none';
+    instructionsMenu.style.display = 'none';
+})
 
 // ==================== SCOREBOARD =============================
-// guð minn góður það hlýtur að vera til betri leið
 
 function scoreBoard() {
     let first = document.getElementById('first');
@@ -357,7 +415,8 @@ function scoreBoard() {
 
     submithighScore.addEventListener('click', () => {
         let name = highscoreName.value;
-        if (name.length > 5) {
+        if (name.length > 6) {
+            highscoreName.value = '';
             tooLong.style.display = 'flex';
         } else {
             tooLong.style.display = 'none';
@@ -402,44 +461,14 @@ function scoreBoard() {
         loopRunner++;
     }
 }
-// ================= DOM SKIPANIR =======================
-
-const instructionsMenu = document.getElementById('instructionsMenu');
-const instructionButton = document.getElementById('instructionsButton');
-const menu = document.getElementById('menu');
-const highscoreButton = document.getElementById('highscoreButton');
-const highscoreMenu = document.getElementById('highscore');
-const back = document.getElementById('back');
-
-instructionButton.addEventListener('click', () => {
-    if (instructionsMenu.style.display === 'none') {
-        instructionsMenu.style.display = 'flex';
-    } else {
-        instructionsMenu.style.display = 'none';
-    }
-});
-highscoreButton.addEventListener('click', () => {
-    if (highscoreMenu.style.display === 'none') {
-        highscoreMenu.style.display = 'flex';
-    }
-    else {
-        highscoreMenu.style.display = 'none';
-    }
-});
-back.addEventListener('click', () => {
-    highscoreMenu.style.display = 'none';
-    instructionsMenu.style.display = 'none';
-})
-
-
-
-
 
 // ====================== BYRJA LEIK ==========================
 
 function startGame() {
     document.querySelector('#menu').style.display = 'none';
     document.querySelector('#welcome').style.display = 'none';
+    soundCheck();
+    musicCheck();
     numberOfPlatforms = 0;
     score = 0;
     player.x = width / 2;
@@ -454,10 +483,6 @@ function startGame() {
     loop = setInterval(update, 15);
 }
 
-// ==================== HLUSTAR EFTIR KEYDOWN ============================
-// og setur þann takka í true inní keys array
-// tjékkar líka á space til að byrja leikinn
-
 document.body.addEventListener("keydown", function (e) {
     keys[e.key] = true;
     if (e.key === ' ' || e.key === 'ArrowUp') {
@@ -466,18 +491,10 @@ document.body.addEventListener("keydown", function (e) {
     }
 });
 
-// ================= HLUSTAR EFTIR KEYUP ===============================
-// og setur þann takka í false inní keys array
-
 document.body.addEventListener("keyup", function (e) {
-
     keys[e.key] = false;
 });
 
-// =============== BYRJAR AÐ KEYRA update() ÞEGAR WINDOW HEFUR LOADAST =============
-// window.addEventListener("load", function () {
-//     update();
-// });
 
 document.getElementById('spila').addEventListener('click', () => {
     startGame();

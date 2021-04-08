@@ -153,4 +153,14 @@ a:hover {
     display: none;
 }
 
+#music, #sound {
+    transform: scale(2);
+    margin: 20px;
+    margin-left: 0;
+}
+
+#menu label {
+    transform: translate(-10px, 15px);
+    margin-left: 10px;
+}
 
