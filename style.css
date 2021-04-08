@@ -42,6 +42,11 @@ body {
 
 ul {
     list-style-type: none;
+    padding: 25px;
+    font-size: 30px;
+}
+#keyboardimg {
+    width: 40px;
 }
 
 
@@ -69,7 +74,11 @@ h2{
     font-size: 50px;
     margin-bottom: 0;
 }
-
+#instructionsMenu h3 {
+    text-align: center;
+    font-size: 50px;
+    margin-bottom: 0;
+}
 #highscore ol {
     position: relative;
     margin: 40px;
