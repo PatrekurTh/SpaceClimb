@@ -244,8 +244,7 @@ function update() {
         clearInterval(platformDeleter);
         clearTimeout(loopPlatforms);
         scoreBoard();
-        document.querySelector('#menu').style.display = '';
-        document.querySelector('#welcome').style.display = '';
+
     }
 }
 
@@ -254,7 +253,7 @@ function update() {
 
 
 // pushar nýjum platform á (time) fresti
-// telur líka hversu margir platforms hafa orðið til fyrir score
+// telur líka hversu margir platforms hafa orðið til, fyrir score
 function periodicall() {
     numberOfPlatforms += 1;
     platforms.push({
@@ -331,6 +330,9 @@ function colCheck(shapeA, shapeB) {
 }
 
 
+// ==================== SCOREBOARD =============================
+// guð minn góður það hlýtur að vera til betri leið
+
 function scoreBoard() {
     let first = document.getElementById('first');
     let second = document.getElementById('second');
@@ -338,28 +340,102 @@ function scoreBoard() {
     let fName = document.getElementById('name');
     let sName = document.getElementById('name2');
     let tName = document.getElementById('name3');
-    if (score > first.innerText) {
-        pName = prompt(`Game Over \n Score: ${score} \n Enter Name: `);
-        third.innerText = second.innerText;
-        tName.innerText = sName.innerText;
-        second.innerText = first.innerText;
-        fName.innerText = sName.innerText;
-        fName.innerText = '=> ' + pName;
-        first.innerText = score;
-    } else if (score > second.innerText) {
-        pName = prompt(`Game Over \n Score: ${score} \n Enter Name: `);
-        third.innerText = second.innerText;
-        tName.innerText = sName.innerText;
-        sName.innerText = '=> ' + pName;
-        second.innerText = score;
-    } else if (score > third.innerText) {
-        pName = prompt(`Game Over \n Score: ${score} \n Enter Name: `);
-        tName.innerText = '=> ' + pName;
-        third.innerText = score;
+    let highScoreNameBox = document.getElementById('highscoreName');
+    let highscoreName = document.getElementById('pName');
+    let submithighScore = document.getElementById('submitName');
+    let tooLong = document.getElementById('toolong');
+    let loopRunner = 0;
+    if (score >= first.innerText || score >= second.innerText || score >= third.innerText) {
+        document.querySelector('#welcome').style.display = 'none';
+        document.querySelector('#menu').style.display = 'none';
+        highScoreNameBox.style.display = 'flex';
     } else {
         alert(`Game Over \n Score: ${score}`);
+        document.querySelector('#welcome').style.display = '';
+        document.querySelector('#menu').style.display = '';
+    }
+
+    submithighScore.addEventListener('click', () => {
+        let name = highscoreName.value;
+        if (name.length > 5) {
+            tooLong.style.display = 'flex';
+        } else {
+            tooLong.style.display = 'none';
+            if (loopRunner === 0) {
+                scoreFinder();
+            }
+        }
+    })
+
+    function scoreFinder() {
+        let name = highscoreName.value;
+        if (score > first.innerText) {
+            third.innerText = second.innerText;
+            tName.innerText = sName.innerText;
+            second.innerText = first.innerText;
+            sName.innerText = fName.innerText;
+            fName.innerText = '=> ' + name;
+            first.innerText = score;
+            highScoreNameBox.style.display = 'none';
+            document.querySelector('#welcome').style.display = '';
+            document.querySelector('#menu').style.display = '';
+        } else if (score >= second.innerText && score < first.innerText) {
+            third.innerText = second.innerText;
+            tName.innerText = sName.innerText;
+            sName.innerText = '=> ' + name;
+            second.innerText = score;
+            highScoreNameBox.style.display = 'none';
+            document.querySelector('#welcome').style.display = '';
+            document.querySelector('#menu').style.display = '';
+        } else if (score >= third.innerText && score < second.innerText) {
+            tName.innerText = '=> ' + name;
+            third.innerText = score;
+            highScoreNameBox.style.display = 'none';
+            document.querySelector('#welcome').style.display = '';
+            document.querySelector('#menu').style.display = '';
+        }
+        else {
+            alert(`Reyndu Aftur! \n Score: ${score}`);
+            document.querySelector('#welcome').style.display = '';
+            document.querySelector('#menu').style.display = '';
+        }
+        loopRunner++;
     }
 }
+// ================= DOM SKIPANIR =======================
+
+const instructionsMenu = document.getElementById('instructionsMenu');
+const instructionButton = document.getElementById('instructionsButton');
+const menu = document.getElementById('menu');
+const highscoreButton = document.getElementById('highscoreButton');
+const highscoreMenu = document.getElementById('highscore');
+const back = document.getElementById('back');
+
+instructionButton.addEventListener('click', () => {
+    if (instructionsMenu.style.display === 'none') {
+        instructionsMenu.style.display = 'flex';
+    } else {
+        instructionsMenu.style.display = 'none';
+    }
+});
+highscoreButton.addEventListener('click', () => {
+    if (highscoreMenu.style.display === 'none') {
+        highscoreMenu.style.display = 'flex';
+    }
+    else {
+        highscoreMenu.style.display = 'none';
+    }
+});
+back.addEventListener('click', () => {
+    highscoreMenu.style.display = 'none';
+    instructionsMenu.style.display = 'none';
+})
+
+
+
+
+
+// ====================== BYRJA LEIK ==========================
 
 function startGame() {
     document.querySelector('#menu').style.display = 'none';
