@@ -96,7 +96,7 @@ boxes.push({
 
 jump.src = 'sound/Jump2.wav';
 death.src = 'sound/death_7_ian.wav';
-song.src = "sound/song.mp3";
+song.src = 'sound/technicko.wav';
 
 // music.addEventListener('click', musicCheck);
 // sound.addEventListener('click', soundCheck);
@@ -104,8 +104,8 @@ song.src = "sound/song.mp3";
 function soundCheck() {
     let sound = document.getElementById('sound');
     if (sound.checked) {
-        jump.volume = 0.3;
-        death.volume = 0.3;
+        jump.volume = 0.1;
+        death.volume = 0.1;
     } else {
         death.volume = 0;
         jump.volume = 0;
