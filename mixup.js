@@ -94,8 +94,8 @@ boxes.push({
 
 
 
-jump.src = '/sound/Jump2.wav';
-death.src = '/sound/death_7_ian.wav'
+jump.src = 'sound/Jump2.wav';
+death.src = 'sound/death_7_ian.wav';
 song.src = "sound/song.mp3";
 
 // music.addEventListener('click', musicCheck);
