@@ -239,7 +239,6 @@ function update() {
         time = 610 - numberOfPlatforms;
     } else {
         gravity = 0.4 + numberOfPlatforms / 500;
-        player.speed += numberOfPlatforms / 350;
         time = 700 - numberOfPlatforms;
     }
 
@@ -258,7 +257,7 @@ function update() {
         isPlayingCounter = 2;
         song.play();
     }
-    if (player.y + 50 > height) {
+    if (player.y > height) {
         death.play();
         song.pause();
         clearInterval(loop);
