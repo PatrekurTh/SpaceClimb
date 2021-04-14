@@ -29,6 +29,7 @@ body {
 
 #instructionsMenu {
     display: none;
+    width: 450px;
 }
 
 #highscore {
@@ -61,8 +62,8 @@ h2{
     position: absolute;
     display: inline;
     transform: translate(-50%);
-    top: 400px;
-    left: -100px;
+    top: 30vh;
+    left: -10vw;
     transform: rotate(-70deg);
     font-size: 80px;
     text-shadow: 3px 3px 20px black;

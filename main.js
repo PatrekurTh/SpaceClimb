@@ -1,8 +1,3 @@
-(function () {
-    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-    window.requestAnimationFrame = requestAnimationFrame;
-})();
-
 var canvas = document.getElementById("canvas"),
     ctx = canvas.getContext("2d"),
     width = window.innerWidth / 2,
@@ -44,7 +39,7 @@ canvas.width = width;
 canvas.height = height;
 
 
-// ======== STATIC PLATFORMS OG VEGGIR ===================
+// ============= BYRJUNAR PLATFORMS OG VEGGIR ===================
 
 //pusha nokkrum static platforms í byrjun til að hefja leik
 function spawnStaticPlatforms() {
@@ -72,10 +67,7 @@ function spawnStaticPlatforms() {
     };
 }
 
-
-
 //vinstri veggur
-//auka hæð svo ekki sé hægt að hoppa yfir vegginn
 boxes.push({
     x: -10,
     y: -200,
@@ -92,14 +84,10 @@ boxes.push({
 });
 
 
-
-
+// ================== HLJÓÐ ============================
 jump.src = 'sound/Jump2.wav';
 death.src = 'sound/death_7_ian.wav';
 song.src = 'sound/technicko.wav';
-
-// music.addEventListener('click', musicCheck);
-// sound.addEventListener('click', soundCheck);
 
 function soundCheck() {
     let sound = document.getElementById('sound');
@@ -121,12 +109,12 @@ function musicCheck() {
     }
 }
 
-
-
-
-
+// ========================================================= //
+// ==================== MAIN LOOP ========================== // 
+// ========================================================= //
 
 function update() {
+
     //=========== PLAYER IMAGE MANAGEMENT =============
     robot.src = 'img/character_robot_idle.png';
 
@@ -231,34 +219,33 @@ function update() {
     }
 
     // ======================== CAMERA OG GAMESPEED MAGIC ========================
+    // allt tengist numberOfPlatforms svo ekki sé sami hraði á leiknum allan tímann
     // engin sérstök ástæða fyrir constants hérna, bara prufað sig áfram
     if (player.y < 0) {
         gravity = 1.2 + numberOfPlatforms / 500;
-        player.speed = 4 + numberOfPlatforms / 350;
-        time = 500 - numberOfPlatforms;
+        player.speed = 4;
+        time = 340 - numberOfPlatforms;
     } else if (player.y < height / 4) {
-        gravity = 0.85 + numberOfPlatforms / 500;
-        player.speed = 3.75 + numberOfPlatforms / 350;
-        time = 550 - numberOfPlatforms;
+        gravity = 1 + numberOfPlatforms / 500;
+        player.speed = 3.75;
+        time = 430 - numberOfPlatforms;
     } else if (player.y < height / 2) {
-        gravity = 0.65 + numberOfPlatforms / 500;
-        player.speed = 3.5 + numberOfPlatforms / 350;
-        time = 600 - numberOfPlatforms;
+        gravity = 0.8 + numberOfPlatforms / 500;
+        player.speed = 3.5;
+        time = 520 - numberOfPlatforms;
     } else if (player.y < height * 3 / 4) {
-        gravity = 0.5 + numberOfPlatforms / 500;
-        player.speed = 3.25 + numberOfPlatforms / 350;
-        time = 650 - numberOfPlatforms;
+        gravity = 0.6 + numberOfPlatforms / 500;
+        player.speed = 3.25;
+        time = 610 - numberOfPlatforms;
     } else {
         gravity = 0.4 + numberOfPlatforms / 500;
         player.speed += numberOfPlatforms / 350;
         time = 700 - numberOfPlatforms;
     }
 
-    // ================ TEIKNA PLAYER =====================
+    // ================ TEIKNA PLAYER OG SCORE =====================
 
     ctx.drawImage(robot, player.x, player.y, player.width, player.height);
-
-    // ================ TEIKNA SCORE ======================
     ctx.fillStyle = "white";
     ctx.font = "40px 'Architects Daughter', cursive";
     ctx.fillText("Score: " + score, 30, 50);
@@ -271,7 +258,7 @@ function update() {
         isPlayingCounter = 2;
         song.play();
     }
-    if (player.y > height) {
+    if (player.y + 50 > height) {
         death.play();
         song.pause();
         clearInterval(loop);
@@ -281,6 +268,12 @@ function update() {
 
     }
 }
+
+// ========================================================= //
+// ================== MAIN LOOP LÝKUR ====================== // 
+// ========================================================= //
+
+
 
 // ============ PLATFORM SPAWN OG DELETE ========================
 
@@ -297,173 +290,19 @@ function periodicall() {
     });
     loopPlatforms = setTimeout(periodicall, time);
 }
+
 // tjékkar hvort ehv platforms séu útaf skjánum á og deletar þeim fyrir langtíma performance
 let platformDeleter = () => {
     let outOfScreen = 0;
     for (let i = 0; i < platforms.length; i++) {
         if (platforms[i].y - 1000 > height) {
-            // - 1000 því þetta var að deleta öllum static platforms í einu
+            // - 1000 því þetta var að deleta öllum static byrjunarplatforms í einu
             outOfScreen += 1;
         }
     };
     platforms.splice(0, outOfScreen);
     score = (numberOfPlatforms - 4) * 10;
 };
-
-// ===================== COLLISION CHECK ÚTREIKNINGUR =====================
-
-function colCheck(shapeA, shapeB) {
-    // nær í vektora til að bera saman
-    var vX = (shapeA.x + (shapeA.width / 2)) - (shapeB.x + (shapeB.width / 2)),
-        vY = (shapeA.y + (shapeA.height / 2)) - (shapeB.y + (shapeB.height / 2)),
-        // bætir við hálfri vídd og breidd hlutsins
-        hWidths = (shapeA.width / 2) + (shapeB.width / 2),
-        hHeights = (shapeA.height / 2) + (shapeB.height / 2),
-        colDir = null;
-
-
-    // ef vektor x og y eru minna en helmingur af vídd eða breidd hljóta þeir að vera inní hlutnum, sem triggerar collision
-    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
-        // finnur út hvaða hlið collision á sér stað og skilar
-        var oX = hWidths - Math.abs(vX),
-            oY = hHeights - Math.abs(vY);
-
-        if (oX >= oY) {
-            if (vY > 0) {
-                colDir = "t";
-                if (boxes.indexOf(shapeB) > 0) {
-                    shapeA.y += oY;
-                }
-            } else {
-                if (shapeA.velY > 0) {
-                    colDir = "b";
-                    shapeA.y -= oY;
-                }
-            }
-        } else {
-            // bara athugað collision hægri/vinstri við veggi ekki platforms
-            if (vX > 0) {
-                //indexOf skilar -1 ef hlutur finnst ekki í array
-                // af eitthverjum ástæðum vildi þetta ekki virka fyrir index 0
-                if (boxes.indexOf(shapeB) !== -1) {
-                    colDir = "l";
-                    shapeA.x += oX;
-                }
-            } else {
-                if (boxes.indexOf(shapeB) > 0) {
-                    colDir = "r";
-                    shapeA.x -= oX;
-                }
-            }
-        }
-    }
-    return colDir;
-}
-
-// ================= DOM SKIPANIR =======================
-
-const instructionsMenu = document.getElementById('instructionsMenu');
-const instructionButton = document.getElementById('instructionsButton');
-const menu = document.getElementById('menu');
-const highscoreButton = document.getElementById('highscoreButton');
-const highscoreMenu = document.getElementById('highscore');
-const back = document.getElementById('back');
-const instructionsback = document.getElementById('instructionsback');
-
-instructionButton.addEventListener('click', () => {
-     if (instructionsMenu.style.display === 'none') {
-         instructionsMenu.style.display = 'flex';
-     } else {
-        instructionsMenu.style.display = 'none';
-    }
-});
-instructionsback.addEventListener('click', () => {
-    instructionsMenu.style.display = 'none';
-})
-highscoreButton.addEventListener('click', () => {
-    if (highscoreMenu.style.display === 'none') {
-        highscoreMenu.style.display = 'flex';
-    }
-    else {
-        highscoreMenu.style.display = 'none';
-    }
-});
-back.addEventListener('click', () => {
-    highscoreMenu.style.display = 'none';
-})
-
-// ==================== SCOREBOARD =============================
-
-function scoreBoard() {
-    let first = document.getElementById('first');
-    let second = document.getElementById('second');
-    let third = document.getElementById('third');
-    let fName = document.getElementById('name');
-    let sName = document.getElementById('name2');
-    let tName = document.getElementById('name3');
-    let highScoreNameBox = document.getElementById('highscoreName');
-    let highscoreName = document.getElementById('pName');
-    let submithighScore = document.getElementById('submitName');
-    let tooLong = document.getElementById('toolong');
-    let loopRunner = 0;
-    if (score >= first.innerText || score >= second.innerText || score >= third.innerText) {
-        document.querySelector('#welcome').style.display = 'none';
-        document.querySelector('#menu').style.display = 'none';
-        highScoreNameBox.style.display = 'flex';
-    } else {
-        alert(`Game Over \n Score: ${score}`);
-        document.querySelector('#welcome').style.display = '';
-        document.querySelector('#menu').style.display = '';
-    }
-
-    submithighScore.addEventListener('click', () => {
-        let name = highscoreName.value;
-        if (name.length > 6) {
-            highscoreName.value = '';
-            tooLong.style.display = 'flex';
-        } else {
-            tooLong.style.display = 'none';
-            if (loopRunner === 0) {
-                scoreFinder();
-            }
-        }
-    })
-
-    function scoreFinder() {
-        let name = highscoreName.value;
-        if (score > first.innerText) {
-            third.innerText = second.innerText;
-            tName.innerText = sName.innerText;
-            second.innerText = first.innerText;
-            sName.innerText = fName.innerText;
-            fName.innerText = '=> ' + name;
-            first.innerText = score;
-            highScoreNameBox.style.display = 'none';
-            document.querySelector('#welcome').style.display = '';
-            document.querySelector('#menu').style.display = '';
-        } else if (score >= second.innerText && score < first.innerText) {
-            third.innerText = second.innerText;
-            tName.innerText = sName.innerText;
-            sName.innerText = '=> ' + name;
-            second.innerText = score;
-            highScoreNameBox.style.display = 'none';
-            document.querySelector('#welcome').style.display = '';
-            document.querySelector('#menu').style.display = '';
-        } else if (score >= third.innerText && score < second.innerText) {
-            tName.innerText = '=> ' + name;
-            third.innerText = score;
-            highScoreNameBox.style.display = 'none';
-            document.querySelector('#welcome').style.display = '';
-            document.querySelector('#menu').style.display = '';
-        }
-        else {
-            alert(`Reyndu Aftur! \n Score: ${score}`);
-            document.querySelector('#welcome').style.display = '';
-            document.querySelector('#menu').style.display = '';
-        }
-        loopRunner++;
-    }
-}
 
 // ====================== BYRJA LEIK ==========================
 
@@ -485,6 +324,8 @@ function startGame() {
 
     loop = setInterval(update, 15);
 }
+
+// ======================== HLUSTUN ===============================
 
 document.body.addEventListener("keydown", function (e) {
     keys[e.key] = true;
